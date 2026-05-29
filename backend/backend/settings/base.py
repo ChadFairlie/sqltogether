@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "projects",
     "usergroups",
     "codes",
+    "sql_execution",
     
     # Third-party
     'rest_framework',
@@ -184,6 +185,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_USE_JWT = True
+
+SQLTOGETHER_DATA_DIR = config("SQLTOGETHER_DATA_DIR", default=str(BASE_DIR.parent / "data"))
+SQLTOGETHER_QUERY_TIMEOUT_SECONDS = config("SQLTOGETHER_QUERY_TIMEOUT_SECONDS", default=5, cast=int)
+SQLTOGETHER_MAX_RESULT_ROWS = config("SQLTOGETHER_MAX_RESULT_ROWS", default=1000, cast=int)
+SQLTOGETHER_MAX_QUERY_LENGTH = config("SQLTOGETHER_MAX_QUERY_LENGTH", default=10000, cast=int)
+SQLTOGETHER_MAX_DB_SIZE_MB = config("SQLTOGETHER_MAX_DB_SIZE_MB", default=50, cast=int)
 
 # Allauth settings (will add email verification later)
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None

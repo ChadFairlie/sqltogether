@@ -8,12 +8,15 @@ services:
     restart: unless-stopped
     environment:
       - DJANGO_SETTINGS_MODULE=backend.settings
+      - SQLTOGETHER_DATA_DIR=/data
     env_file:
       - ./backend/.env
     depends_on:
       - redis
     networks:
       - backend
+    volumes:
+      - sqltogether_data:/data
 
   redis:
     image: redis:7-alpine
@@ -34,6 +37,8 @@ services:
       - redis
     networks:
       - backend
+    volumes:
+      - sqltogether_data:/data
 
   celery-beat:
     image: pytogether-backend:latest
@@ -45,6 +50,8 @@ services:
       - redis
     networks:
       - backend
+    volumes:
+      - sqltogether_data:/data
 
   # Nginx reverse proxy
   nginx:
@@ -89,6 +96,7 @@ services:
 
 volumes:
   redis_data:
+  sqltogether_data:
 
 networks:
   backend:

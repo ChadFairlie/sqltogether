@@ -6,5 +6,6 @@ urlpatterns = [
 
     # app endpoints
     path("api/", include("users.urls")),
+    path("api/", include("sql_execution.urls")),
     path("groups/", include("usergroups.urls")), # this app also includes projects
 ]

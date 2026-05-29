@@ -4,12 +4,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core import signing
 from django.conf import settings
+from django.db import transaction
 from decouple import config
 
 from .models import Project
 from usergroups.models import Group
 from codes.models import Code
 from .serializers import ProjectDetailSerializer, ProjectCreateSerializer, ProjectUpdateSerializer
+from sql_execution.models import ProjectDatabaseInstance
+from sql_execution.services import SQLiteExecutionService
 from utils.redis_helpers import active_set_key, SYNC_REDIS
 
 # Helper functions
@@ -87,7 +90,17 @@ def create_project(request, group_id):
     serializer = ProjectCreateSerializer(data=request.data, context={"request": request})
     
     if serializer.is_valid():
-        project = serializer.save(group=group)
+        service = SQLiteExecutionService()
+        db_path = None
+        try:
+            with transaction.atomic():
+                project = serializer.save(group=group)
+                db_path = service.create_project_database(project.id)
+                ProjectDatabaseInstance.objects.create(project=project, file_path=db_path)
+        except Exception:
+            if db_path:
+                service.delete_project_database(db_path)
+            return Response({"error": "Could not create project database"}, status=500)
         
         return Response(ProjectDetailSerializer(project).data, status=201)
 
@@ -130,10 +143,17 @@ def delete_project(request, group_id, project_id):
             "error": f"Cannot delete project while {active_users} user(s) are actively editing it."
         }, status=400)
 
+    db_path = None
+    if hasattr(project, 'database_instance'):
+        db_path = project.database_instance.file_path
+        project.database_instance.delete()
+
     if hasattr(project, 'code'):
         project.code.delete()
         
     project.delete()
+    if db_path:
+        SQLiteExecutionService().delete_project_database(db_path)
     return Response({"message": "Project deleted"}, status=200)
 
 

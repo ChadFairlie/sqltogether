@@ -131,7 +131,7 @@ export default function SqlEditor({ groupId: propGroupId, projectId: propProject
   }, [projectName]);
 
   // CUSTOM HOOKS
-  const runner = useSqlRunner();
+  const runner = useSqlRunner(projectId);
   const voice = useVoiceChat(wsRef, myUserId);
   const canvas = useSharedCanvas(ydocRef, isConnected, isSynced);
 
@@ -494,6 +494,10 @@ export default function SqlEditor({ groupId: propGroupId, projectId: propProject
     else editorViewRef.current?.dispatch({ effects: removeErrorEffect.of() });
   }, [runner.errorLine]);
 
+  useEffect(() => {
+    if (projectId) runner.loadHistory(projectId);
+  }, [projectId, runner.loadHistory]);
+
   const sendChat = () => {
     if (!chatInput.trim() || !wsRef.current) return;
     wsRef.current.send(JSON.stringify({ type: 'chat_message', message: chatInput.trim() }));
@@ -663,30 +667,91 @@ export default function SqlEditor({ groupId: propGroupId, projectId: propProject
     </div>
   );
 
-  const consoleSlot = runner.consoleOutput.length === 0 ? (
-    <div className="text-gray-500 italic">Query results will appear here after Phase 4 connects SQL execution.</div>
-  ) : (
-    runner.consoleOutput.map(e => (
-      <div key={e.id} className="flex items-start space-x-2 py-1">
-        <span className="text-gray-500 text-xs mt-0.5 min-w-[60px]">
-          {e.timestamp.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-        </span>
-        <span className="text-xs mt-0.5">
-          {e.type === 'error' ? '❌' : e.type === 'input' ? '▶️' : e.type === 'system' ? '⚙️' : ''}
-        </span>
-
-        <div className={`flex-1 whitespace-pre-wrap break-words font-mono text-sm 
-                ${e.type === 'error' ? 'text-red-400' :
-            e.type === 'input' ? 'text-blue-400' :
-              e.type === 'system' ? 'text-yellow-400' :
-                'text-gray-100'}`}
-
-          dangerouslySetInnerHTML={{
-            __html: Anser.ansiToHtml(e.content.replace(/</g, "&lt;").replace(/>/g, "&gt;"))
-          }}
-        />
+  const resultTable = runner.result && (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-3 text-xs text-gray-400">
+        <span>{runner.result.row_count} row{runner.result.row_count === 1 ? '' : 's'} returned</span>
+        <span>{runner.result.execution_time_ms} ms{runner.result.truncated ? ' · truncated' : ''}</span>
       </div>
-    ))
+      {runner.result.columns.length > 0 ? (
+        <div className="overflow-auto border border-gray-700 rounded">
+          <table className="min-w-full text-left text-xs">
+            <thead className="bg-gray-800 text-gray-300">
+              <tr>
+                {runner.result.columns.map((column, index) => (
+                  <th key={`${column}-${index}`} className="px-3 py-2 border-b border-gray-700 font-semibold whitespace-nowrap">{column}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {runner.result.rows.map((row, rowIndex) => (
+                <tr key={rowIndex} className="odd:bg-gray-900 even:bg-gray-850">
+                  {row.map((cell, cellIndex) => (
+                    <td key={cellIndex} className="px-3 py-2 border-b border-gray-800 align-top whitespace-pre-wrap">
+                      {cell === null ? <span className="text-gray-500 italic">NULL</span> : String(cell)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="text-gray-300 bg-gray-800 border border-gray-700 rounded px-3 py-2">
+          Query completed. {runner.result.affected_rows} row{runner.result.affected_rows === 1 ? '' : 's'} affected.
+        </div>
+      )}
+    </div>
+  );
+
+  const queryHistory = runner.history.length > 0 && (
+    <div className="border-t border-gray-700 pt-3 mt-3">
+      <div className="text-xs uppercase tracking-wide text-gray-500 mb-2">Query History</div>
+      <div className="space-y-2">
+        {runner.history.slice(0, 8).map(item => (
+          <div key={item.id} className="rounded border border-gray-800 bg-gray-900/70 p-2">
+            <div className="flex items-center justify-between gap-3 text-[11px] text-gray-500 mb-1">
+              <span className={item.status === 'success' ? 'text-green-400' : 'text-red-400'}>{item.status}</span>
+              <span>{item.execution_time_ms ?? 0} ms</span>
+            </div>
+            <div className="text-xs text-gray-300 line-clamp-2 whitespace-pre-wrap break-words">{item.query_text}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const consoleSlot = (
+    <div className="space-y-3">
+      {!runner.result && !runner.error && runner.consoleOutput.length === 0 && (
+        <div className="text-gray-500 italic">Run a query to see results from this project's isolated SQLite database.</div>
+      )}
+      {runner.error && (
+        <div className="border border-red-900 bg-red-950/40 text-red-300 rounded px-3 py-2">
+          <div className="text-xs uppercase tracking-wide text-red-500 mb-1">{runner.error.error_type || 'SQL error'}</div>
+          <div className="whitespace-pre-wrap break-words">{runner.error.error_message}</div>
+        </div>
+      )}
+      {resultTable}
+      {runner.consoleOutput.map(e => (
+        <div key={e.id} className="flex items-start space-x-2 py-1">
+          <span className="text-gray-500 text-xs mt-0.5 min-w-[60px]">
+            {e.timestamp.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+          </span>
+          <div className={`flex-1 whitespace-pre-wrap break-words font-mono text-sm 
+                  ${e.type === 'error' ? 'text-red-400' :
+              e.type === 'input' ? 'text-blue-400' :
+                e.type === 'system' ? 'text-yellow-400' :
+                  'text-gray-100'}`}
+
+            dangerouslySetInnerHTML={{
+              __html: Anser.ansiToHtml(e.content.replace(/</g, "&lt;").replace(/>/g, "&gt;"))
+            }}
+          />
+        </div>
+      ))}
+      {queryHistory}
+    </div>
   );
 
   const inputSlot = null;
@@ -815,7 +880,7 @@ export default function SqlEditor({ groupId: propGroupId, projectId: propProject
 
         isLoading={runner.isLoading}
         isRunning={runner.isRunning}
-        onRun={() => runner.runQuery(ytextRef.current ? ytextRef.current.toString() : code)}
+        onRun={() => runner.runQuery({ projectId, sql: ytextRef.current ? ytextRef.current.toString() : code })}
         onStop={runner.stopQuery}
         onDownloadOption={handleDownload}
       />
