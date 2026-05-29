@@ -52,11 +52,11 @@ export default function Login() {
   return (
     <>
     <Helmet>
-        <title>PyTogether - Login</title>
+        <title>SQLTogether - Login</title>
         <link rel="icon" href="/favicon.ico" />
-        <link rel="canonical" href="https://pytogether.org/login" />
-        <meta name="description" content="Google Docs for Python. Real-time collaborative Python IDE in the browser, completely free" />
-        <meta property="og:title" content="PyTogether" />
+        <link rel="canonical" href="https://sqltogether.org/login" />
+        <meta name="description" content="Real-time collaborative SQL learning in the browser, completely free" />
+        <meta property="og:title" content="SQLTogether" />
         <style>{`
           @keyframes blob {
             0% { transform: translate(0px, 0px) scale(1); }
@@ -102,12 +102,12 @@ export default function Login() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full blur-2xl opacity-40 animate-pulse"></div>
               <div className="relative p-4 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border-2 border-gray-700/50">
-                <img src="/pytog.png" alt="PyTogether Logo" className="h-16 w-16" />
+                <img src="/sqltogether.svg" alt="SQLTogether Logo" className="h-16 w-16" />
               </div>
             </div>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-3">
-            PyTogether
+            SQLTogether
           </h1>
           <p className="text-gray-300 text-base font-semibold mb-2">Easy. Quick. Real-time. Free.</p>
         </div>
@@ -228,7 +228,7 @@ export default function Login() {
         {/* Footer */}
         <div className="p-4 text-center border-t border-gray-700/50 bg-gray-900/50">
           <p className="text-xs text-gray-400">
-             Open source at <a href="https://github.com/SJRiz/pytogether" className="text-blue-400 hover:underline">GitHub</a>
+             Adapted from <a href="https://github.com/SJRiz/pytogether" className="text-blue-400 hover:underline">PyTogether</a>
           </p>
         </div>
       </div>

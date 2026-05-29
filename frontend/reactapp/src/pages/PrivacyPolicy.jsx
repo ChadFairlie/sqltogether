@@ -20,8 +20,8 @@ const PrivacyPolicy = () => {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">1. Introduction</h2>
             <p>
-              Welcome to <strong>PyTogether</strong> ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. 
-              This Privacy Policy explains what information we collect, how we use it, and your rights in relation to it when you use our collaborative IDE platform.
+              Welcome to <strong>SQLTogether</strong> ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. 
+              This Privacy Policy explains what information we collect, how we use it, and your rights in relation to it when you use our collaborative SQL learning platform.
             </p>
           </section>
 
@@ -32,7 +32,7 @@ const PrivacyPolicy = () => {
                 <strong>Account Information:</strong> When you register, we collect your email address and an encrypted version of your password. If you use Google Login, we collect your email address provided by Google.
               </li>
               <li>
-                <strong>User Content (Code):</strong> We collect and store the code files, and project names you create within the IDE to provide the persistence and collaboration features.
+                <strong>User Content:</strong> We collect and store the project content and project names you create within the platform to provide the persistence and collaboration features.
               </li>
               <li>
                 <strong>Usage Data:</strong> We may collect basic server logs including IP addresses and browser types to monitor the health and security of the application.
@@ -42,10 +42,10 @@ const PrivacyPolicy = () => {
 
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">3. How We Use Your Information</h2>
-            <p className="mb-2">We use your information solely for the purpose of running the PyTogether service, specifically to:</p>
+            <p className="mb-2">We use your information solely for the purpose of running the SQLTogether service, specifically to:</p>
             <ul className="list-disc pl-5 space-y-2 text-gray-400">
               <li>Create and manage your account.</li>
-              <li>Allow you to save, retrieve, and edit your code projects.</li>
+              <li>Allow you to save, retrieve, and edit your projects.</li>
               <li>Enable real-time collaboration with other users (e.g., syncing selections and text changes).</li>
               <li>Prevent fraudulent activity and ensure the security of the platform.</li>
             </ul>
@@ -69,7 +69,7 @@ const PrivacyPolicy = () => {
             <div className="bg-blue-900/20 border border-blue-500/30 p-4 rounded-lg">
                 <p className="text-blue-200 font-medium mb-1">Important Note on Sensitive Data</p>
                 <p className="text-gray-400">
-                    <strong>Do not store sensitive credentials</strong> (such as API secrets, or passwords) inside your code files on this platform. We cannot guarantee that user-generated code will remain private in the event of a database breach.
+                    <strong>Do not store sensitive credentials</strong> (such as API secrets or passwords) inside your project content on this platform. We cannot guarantee that user-generated content will remain private in the event of a database breach.
                 </p>
             </div>
           </section>
@@ -84,7 +84,7 @@ const PrivacyPolicy = () => {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3">7. Data Retention & Deletion</h2>
             <p>
-              We retain your code and account information indefinitely to provide the service. If you wish to delete your account and all associated data, please contact us at the email below, and we will remove your information from our database.
+              We retain your project content and account information indefinitely to provide the service. If you wish to delete your account and all associated data, please contact us at the email below, and we will remove your information from our database.
             </p>
           </section>
 
@@ -93,8 +93,8 @@ const PrivacyPolicy = () => {
             <p>
               If you have questions about this Privacy Policy, please contact us at:
               <br />
-              <a href="mailto:contact@pytogether.org" className="text-blue-400 hover:underline mt-2 inline-block">
-                contact@pytogether.org
+              <a href="mailto:contact@sqltogether.org" className="text-blue-400 hover:underline mt-2 inline-block">
+                contact@sqltogether.org
               </a>
             </p>
           </section>

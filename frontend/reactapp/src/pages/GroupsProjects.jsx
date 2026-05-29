@@ -39,7 +39,7 @@ export default function GroupsAndProjectsPage() {
 
     const navigate = useNavigate();
     
-    document.title = 'PyTogether';
+    document.title = 'SQLTogether';
 
     const handleLogout = async () => {
     try {
@@ -221,7 +221,7 @@ export default function GroupsAndProjectsPage() {
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl blur-md opacity-15"></div>
                         <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-1 rounded-xl border border-gray-700/50">
                         <img
-                            src="/pytog.png"
+                            src="/sqltogether.svg"
                             alt="Code Icon"
                             className="h-8 w-8"
                         />
@@ -229,13 +229,13 @@ export default function GroupsAndProjectsPage() {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold pl-2 bg-clip-text">
-                        PyTogether
+                        SQLTogether
                         </h1>
                     </div>
 
                     <div className="hidden md:flex items-center ml-4 pl-4 border-l border-gray-700 h-8">
                         <a 
-                            href="mailto:contact@pytogether.org" 
+                            href="mailto:contact@sqltogether.org" 
                             className="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors text-sm font-medium"
                             title="Send Feedback"
                         >
@@ -255,7 +255,7 @@ export default function GroupsAndProjectsPage() {
                         <Coffee className="w-4 h-4" />
                     </a>
 
-                    <a href="https://github.com/SJRiz/pytogether" target="_blank" rel="noreferrer" className="hidden md:flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-medium mr-3">
+                    <a href="https://github.com/SJRiz/pytogether" target="_blank" rel="noreferrer" title="Original PyTogether project" className="hidden md:flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-medium mr-3">
                         <Github className="w-4 h-4" />
                     </a>
                     
@@ -295,14 +295,14 @@ export default function GroupsAndProjectsPage() {
         <footer className="w-full border-t border-gray-800 bg-[#0e1421] py-6 mt-auto">
             <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p className="text-gray-500 text-sm">
-                    &copy; {new Date().getFullYear()} PyTogether. All rights reserved.
+                    &copy; {new Date().getFullYear()} SQLTogether. All rights reserved.
                 </p>
                 
                 {/* Footer Links */}
                 <div className="flex gap-6 text-sm text-gray-400">
                     <a href="/privacy" className="hover:text-blue-400 transition-colors">Privacy Policy</a>
                     <a href="/terms" className="hover:text-blue-400 transition-colors">Terms of Service</a>
-                    <a href="mailto:contact@pytogether.org" className="hover:text-blue-400 transition-colors">Contact</a>
+                    <a href="mailto:contact@sqltogether.org" className="hover:text-blue-400 transition-colors">Contact</a>
                 </div>
             </div>
         </footer>

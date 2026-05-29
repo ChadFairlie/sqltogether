@@ -3,7 +3,7 @@
 services:
   # build the image all other services will use
   django-builder:
-    image: pytogether-backend:latest
+    image: sqltogether-backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -11,7 +11,7 @@ services:
 
   # for running migrations and superuser script
   django-init:
-    image: pytogether-backend:latest
+    image: sqltogether-backend:latest
     command: >
       sh -c "
         echo 'Django-Init: Waiting for Postgres...'
@@ -37,7 +37,7 @@ services:
       - django-builder # Ensures image is built first
 
   django:
-    image: pytogether-backend:latest
+    image: sqltogether-backend:latest
     restart: unless-stopped
     command: >
       sh -c "
@@ -87,7 +87,7 @@ services:
       - backend
 
   celery:
-    image: pytogether-backend:latest
+    image: sqltogether-backend:latest
     restart: unless-stopped
     command: celery -A backend worker --concurrency=1 -l info
     env_file:
@@ -105,7 +105,7 @@ services:
       - backend
 
   celery-beat:
-    image: pytogether-backend:latest
+    image: sqltogether-backend:latest
     restart: unless-stopped
     command: celery -A backend beat -l info
     env_file:

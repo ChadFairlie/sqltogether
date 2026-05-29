@@ -7,7 +7,7 @@ import App from "./App.jsx";
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
-if (apiBaseUrl === "https://api.pytogether.org") {
+if (apiBaseUrl === "https://api.sqltogether.org") {
   const script = document.createElement('script');
   script.async = true;
   script.defer = true;

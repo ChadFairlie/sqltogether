@@ -221,7 +221,7 @@ USER_COLORS = [
 # ------------------ CODE TEMPLATES ---------------------
 
 NONE_TEMPLATE = """name = input("Whats your name? ")
-print(f"Hello from PyTogether, {name}!")"""
+print(f"Hello from SQLTogether, {name}!")"""
 
 PYTEST_TEMPLATE = """# ----------------------------------------------
 # WRITE YOUR SOLUTION HERE

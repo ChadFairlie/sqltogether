@@ -199,9 +199,9 @@ export default function EmbedPlayground() {
                     <div className="flex items-center space-x-2 flex-shrink-0">
                         <div className="flex items-center gap-2 md:gap-3">
                             <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-1.5 rounded-xl border border-gray-700/50">
-                                <img src="/pytog.png" alt="Icon" className="h-5 w-5 md:h-6 md:w-6" />
+                                <img src="/sqltogether.svg" alt="Icon" className="h-5 w-5 md:h-6 md:w-6" />
                             </div>
-                            <h1 className="text-base md:text-lg font-bold bg-clip-text hidden sm:block">PyTogether</h1>
+                            <h1 className="text-base md:text-lg font-bold bg-clip-text hidden sm:block">SQLTogether</h1>
                         </div>
                     </div>
 

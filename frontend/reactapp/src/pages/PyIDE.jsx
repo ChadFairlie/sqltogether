@@ -123,9 +123,9 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
 
   // Update browser title to match project name
   useEffect(() => {
-    document.title = `${projectName} - PyTogether`;
+    document.title = `${projectName} - SQLTogether`;
     return () => {
-      document.title = "PyTogether";
+      document.title = "SQLTogether";
     };
   }, [projectName]);
 
@@ -248,7 +248,7 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
 
     const isDev = import.meta.env.DEV;
 
-    const isOfficialProd = window.location.hostname === 'pytogether.org' || window.location.hostname === 'www.pytogether.org';
+    const isOfficialProd = window.location.hostname === 'sqltogether.org' || window.location.hostname === 'www.sqltogether.org';
 
     let wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     let wsHost = window.location.host;
@@ -259,7 +259,7 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
     }
     else if (isOfficialProd) {
       wsProtocol = 'wss:';
-      wsHost = 'api.pytogether.org';
+      wsHost = 'api.sqltogether.org';
     }
 
     let tokenParam = token ? `?token=${token}` : "?";

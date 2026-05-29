@@ -207,9 +207,9 @@ export default function CodeLayout({
             </button>
             <div className="flex items-center gap-2 md:gap-3">
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-1.5 md:p-2 rounded-xl border border-gray-700/50">
-                <img src="/pytog.png" alt="Icon" className="h-6 w-6 md:h-8 md:w-8" />
+                <img src="/sqltogether.svg" alt="Icon" className="h-6 w-6 md:h-8 md:w-8" />
               </div>
-              <h1 className="text-lg md:text-2xl font-bold pl-1 md:pl-2 bg-clip-text hidden sm:block">PyTogether</h1>
+              <h1 className="text-lg md:text-2xl font-bold pl-1 md:pl-2 bg-clip-text hidden sm:block">SQLTogether</h1>
             </div>
             <div className="hidden sm:flex items-center space-x-2 pl-2">
               {isConnected ? (

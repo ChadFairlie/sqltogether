@@ -43,7 +43,7 @@ registerRoute(
       url.pathname.startsWith('/ide/') ||
       url.pathname.startsWith('/playground/') ||
       url.pathname.startsWith('/snippet/') ||
-      (url.hostname.includes('pytogether.org') && !url.pathname.startsWith('/api/')) || 
+      (url.hostname.includes('sqltogether.org') && !url.pathname.startsWith('/api/')) || 
       url.hostname.includes('localhost') ||
       url.hostname.includes('127.0.0.1') ||
       url.hostname.includes(import.meta.env.VITE_DOMAIN)

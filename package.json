@@ -1,5 +1,5 @@
 {
-  "name": "pytogether",
+  "name": "sqltogether",
   "version": "1.0.0",
   "scripts": {
     "postinstall": "cd frontend/reactapp && npm install",
