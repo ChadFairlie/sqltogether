@@ -242,7 +242,7 @@ export default function About() {
               <div className="mt-4 text-center lg:text-left">
                 <h3 className="text-xl font-bold text-white flex items-center gap-2 justify-center lg:justify-start">
                   <PenTool className="w-5 h-5 text-pink-400" />
-                  Draw Over Code
+                  Draw Over Queries
                 </h3>
                 <p className="text-slate-400 text-sm mt-1">Annotate logic flows visually. Perfect for tutors.</p>
               </div>
@@ -318,25 +318,25 @@ export default function About() {
                 </div>
               </div>
 
-              {/* Packages */}
+              {/* SQL environment */}
               <div className="col-span-1 bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700 p-8 rounded-3xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-6 opacity-10">
                   <Package className="w-24 h-24" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                   <Terminal className="w-5 h-5 text-green-400" />
-                  Pre-installed
+                  SQL Workspace
                 </h3>
                 <ul className="space-y-3">
-                  {['numpy', 'pandas', 'matplotlib', 'scipy'].map((pkg) => (
-                    <li key={pkg} className="flex items-center gap-2 text-slate-300 font-mono text-sm">
+                  {['SQLite MVP', 'shared queries', 'result panes', 'project isolation'].map((item) => (
+                    <li key={item} className="flex items-center gap-2 text-slate-300 font-mono text-sm">
                       <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                      {pkg}
+                      {item}
                     </li>
                   ))}
                 </ul>
                 <div className="mt-6 pt-6 border-t border-slate-700/50">
-                  <p className="text-xs text-slate-500">Auto-installs imports on the fly.</p>
+                  <p className="text-xs text-slate-500">SQL execution connects in the next phase.</p>
                 </div>
               </div>
 
@@ -370,9 +370,9 @@ export default function About() {
                 <div>
                   <h3 className="text-lg font-bold text-amber-400 mb-1">Platform Limitations</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">
-                    Because SQLTogether runs entirely in the browser (WASM),
-                    <strong> GUI libraries like Pygame and Tkinter are not supported</strong>.
-                    Though standard I/O and data science libraries (Matplotlib, Numpy) work perfectly.
+                    SQLTogether is currently in the editor conversion phase.
+                    <strong> Query execution is a safe placeholder until Phase 4</strong>,
+                    when SQL runs against isolated project databases instead of the application database.
                   </p>
                 </div>
               </div>

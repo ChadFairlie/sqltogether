@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { ServerCrash } from 'lucide-react';
-import PyIDE from "./pages/PyIDE";
+import SqlEditor from "./pages/SqlEditor";
 import GroupsAndProjectsPage from './pages/GroupsProjects';
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -125,7 +125,7 @@ function App() {
         <Route path="/groups/:groupId/projects/:projectId"
           element={
             <ProtectedRoute>
-              <PyIDE />
+              <SqlEditor />
             </ProtectedRoute>
           }
         />

@@ -61,7 +61,7 @@ const PrivacyPolicy = () => {
           <section>
             <h2 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
                 <Lock className="h-5 w-5 text-blue-400" />
-                5. Data Security & Code Safety
+                5. Data Security & Content Safety
             </h2>
             <p className="mb-4">
               We implement reasonable security measures to protect your data (such as hashing passwords). However, please note:

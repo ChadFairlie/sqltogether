@@ -13,7 +13,7 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
-    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/lang-sql": "^6.10.0",
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.38.2",
     "@react-oauth/google": "^0.12.2",

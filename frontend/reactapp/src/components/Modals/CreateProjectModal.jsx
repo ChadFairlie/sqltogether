@@ -1,5 +1,5 @@
 import { Modal } from "./Modal";
-import { Beaker, BarChart2, FileCode } from "lucide-react";
+import { Database, FileCode, Rows3 } from "lucide-react";
 
 export const CreateProjectModal = ({ 
   isOpen,
@@ -15,21 +15,21 @@ export const CreateProjectModal = ({
   const templates = [
     {
       id: "none",
-      title: "None (Default)",
-      desc: "Normal Python script",
+      title: "Basic Query",
+      desc: "Simple SELECT starter",
       icon: <FileCode size={20} />
     },
     {
       id: "pytest",
-      title: "PyTest",
-      desc: "Unit testing suite setup",
-      icon: <Beaker size={20} />
+      title: "Schema Practice",
+      desc: "Create and inspect tables",
+      icon: <Database size={20} />
     },
     {
       id: "plt",
-      title: "Matplotlib",
-      desc: "Data visualization setup",
-      icon: <BarChart2 size={20} />
+      title: "Join Practice",
+      desc: "Query related tables",
+      icon: <Rows3 size={20} />
     }
   ];
 

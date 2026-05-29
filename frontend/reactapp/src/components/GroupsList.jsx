@@ -78,7 +78,7 @@ export const GroupsList = ({
                 className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-700/10 hover:bg-gray-800 text-gray-300 hover:text-white rounded-lg border border-gray-700/50 hover:border-gray-600 transition-all duration-200 font-medium text-sm"
               >
                 <Code className="h-4 w-4" />
-                <span>Offline Playground</span>
+                <span>SQL Playground</span>
               </button>
             </div>
             
@@ -149,10 +149,10 @@ export const GroupsList = ({
             <button 
               onClick={() => navigate('/playground')}
               className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-700/10 hover:bg-gray-800 text-gray-300 hover:text-white rounded-xl border border-gray-700/50 hover:border-gray-600 transition-all duration-200 font-medium group"
-              title="Go to Offline Playground"
+              title="Go to SQL Playground"
             >
               <Code className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
-              <span className="text-sm">Offline Playground</span>
+              <span className="text-sm">SQL Playground</span>
             </button>
         </div>
       </div>

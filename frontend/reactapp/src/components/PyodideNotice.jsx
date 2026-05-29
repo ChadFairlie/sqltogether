@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { AlertCircle, Box, CheckCircle } from "lucide-react";
 
-export default function PyodideModal() {
+export default function SqlPreviewNotice() {
   const [open, setOpen] = useState(false); // Changed from true to false
 
   useEffect(() => {
-    const hasSeen = localStorage.getItem("pyodideModalShown");
+    const hasSeen = localStorage.getItem("sqlPreviewNoticeShown");
     if (!hasSeen) {
       setOpen(true);
     }
   }, []);
 
   const handleClose = () => {
-    localStorage.setItem("pyodideModalShown", "true");
+    localStorage.setItem("sqlPreviewNoticeShown", "true");
     setOpen(false);
   };
 
@@ -26,11 +26,11 @@ export default function PyodideModal() {
         
         <div className="relative">
           <h2 className="text-3xl font-bold mb-3 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Exciting Update!
+            SQL Editor Preview
           </h2>
           
           <p className="text-gray-300 text-center mb-6 text-lg">
-            We've migrated to <strong>Pyodide</strong>, full CPython running entirely in your browser
+            SQLTogether is moving the editor experience to <strong>SQL</strong>. Query execution is intentionally disabled until the isolated database runner lands.
           </p>
 
           {/* Benefits grid */}
@@ -39,23 +39,23 @@ export default function PyodideModal() {
               <Box className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
               <div>
                 <div className="font-semibold text-white mb-1">Full Scientific Stack</div>
-                <div className="text-sm text-gray-400">We now support <strong>Matplotlib</strong>, NumPy, Pandas, SciPy, and much more libraries!</div>
+                <div className="text-sm text-gray-400">The editor now uses SQL syntax highlighting and starter query content.</div>
               </div>
             </div>
 
             <div className="flex items-start gap-3 bg-gray-800 bg-opacity-50 p-4 rounded-lg border border-gray-700">
               <AlertCircle className="w-5 h-5 text-orange-400 mt-0.5 flex-shrink-0" />
               <div>
-                <div className="font-semibold text-white mb-1">Better Error Handling</div>
-                <div className="text-sm text-gray-400">Clear, detailed tracebacks that pinpoint exactly where issues occur</div>
+                <div className="font-semibold text-white mb-1">Safe Placeholder</div>
+                <div className="text-sm text-gray-400">Run and stop actions do not execute user SQL during Phase 3.</div>
               </div>
             </div>
 
             <div className="flex items-start gap-3 bg-gray-800 bg-opacity-50 p-4 rounded-lg border border-gray-700">
               <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
               <div>
-                <div className="font-semibold text-white mb-1">True Python Compatibility</div>
-                <div className="text-sm text-gray-400">Real CPython 3.13—not a subset, not a transpiler</div>
+                <div className="font-semibold text-white mb-1">Phase 4 Ready</div>
+                <div className="text-sm text-gray-400">The next phase will connect isolated project databases for real query execution.</div>
               </div>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default function PyodideModal() {
             onClick={handleClose}
             className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
-            cool i dont care
+            Got it
           </button>
         </div>
       </div>

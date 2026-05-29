@@ -233,7 +233,7 @@ export default function CodeLayout({
             {showDownloadMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-gray-700 border border-gray-600 rounded-lg shadow-xl z-50">
                 <ul className="py-1">
-                  {['.py', '.txt', '.docx', '.pdf'].map(ext => (
+                  {['.sql', '.txt', '.docx', '.pdf'].map(ext => (
                     <li key={ext} onClick={() => { onDownloadOption(ext); setShowDownloadMenu(false); }}
                       className="px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 cursor-pointer">
                       Download as {ext}
@@ -272,7 +272,7 @@ export default function CodeLayout({
             <button
               onClick={() => setShowConsole(!showConsole)}
               className={`p-1.5 rounded-lg ${showConsole ? 'bg-blue-600' : 'bg-gray-700'} hover:bg-gray-600 text-gray-300`}
-              title={showConsole ? 'Hide Console' : 'Show Console'}
+              title={showConsole ? 'Hide Results' : 'Show Results'}
             >
               <Terminal className="h-4 w-4" />
             </button>
@@ -283,14 +283,14 @@ export default function CodeLayout({
                 <span className="text-xs md:text-sm hidden sm:inline">Loading...</span>
               </div>
             ) : isRunning ? (
-              <button onClick={onStop} className="flex items-center space-x-1 md:space-x-2 px-2 md:px-4 py-1.5 md:py-2 bg-red-600 rounded-lg hover:bg-red-700 transition-colors text-sm md:text-base"><X className="h-4 w-4" /><span className="hidden sm:inline">Stop</span></button>
+              <button onClick={onStop} className="flex items-center space-x-1 md:space-x-2 px-2 md:px-4 py-1.5 md:py-2 bg-red-600 rounded-lg hover:bg-red-700 transition-colors text-sm md:text-base"><X className="h-4 w-4" /><span className="hidden sm:inline">Stop Query</span></button>
             ) : (
               <button
                 onClick={() => { setShowConsole(true); onRun(); }}
                 className="flex items-center space-x-1 md:space-x-2 px-2 md:px-4 py-1.5 md:py-2 bg-green-600 rounded-lg hover:bg-green-700 transition-colors text-sm md:text-base"
               >
                 <Play className="h-4 w-4" />
-                <span className="hidden sm:inline">Run</span>
+                <span className="hidden sm:inline">Run Query</span>
               </button>
             )}
           </div>
@@ -316,7 +316,7 @@ export default function CodeLayout({
         {/* EDITOR AREA */}
         <div className={`flex ${isMobile ? 'flex-1 min-h-0' : 'flex-1'} flex-col ${isMobile ? 'border-b' : 'border-r'} border-gray-700 min-w-0 relative`}>
           <div className="bg-gray-800 px-3 md:px-4 py-2 border-b border-gray-700 flex items-center justify-between z-20 flex-shrink-0">
-            <h2 className="text-xs md:text-sm font-medium text-gray-300">main.py</h2>
+            <h2 className="text-xs md:text-sm font-medium text-gray-300">query.sql</h2>
             <div className="flex items-center space-x-2">
               <div className={`h-2 w-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-orange-400'}`}></div>
               <span className="text-xs text-gray-500">{isConnected ? 'Synced' : 'Modified'}</span>
@@ -340,7 +340,7 @@ export default function CodeLayout({
             <div className="bg-gray-800 px-3 md:px-4 py-2 border-b border-gray-700 flex items-center justify-between flex-shrink-0">
               <div className="flex items-center space-x-2">
                 <Terminal className="h-4 w-4 text-gray-400" />
-                <h2 className="text-xs md:text-sm font-medium text-gray-300">Console</h2>
+                <h2 className="text-xs md:text-sm font-medium text-gray-300">Results</h2>
                 {inputContent && <span className="text-xs text-blue-400 animate-pulse">Waiting...</span>}
               </div>
               <div className="flex items-center">
@@ -350,10 +350,12 @@ export default function CodeLayout({
                     <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500 border border-gray-800 transform translate-x-1/4 -translate-y-1/4"></span>
                   )}
                 </button>
-                <button onClick={() => { setShowPlot(!showPlot); if (!showPlot) setShowChat(false); }} className={`p-1 hover:bg-gray-700 rounded ${showPlot ? 'text-blue-400' : 'text-gray-400'}`}>
-                  <Eye className="h-4 w-4" />
-                </button>
-                <button onClick={onClearConsole} className="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-red-400" title="Clear Console">
+                {plotContent && (
+                  <button onClick={() => { setShowPlot(!showPlot); if (!showPlot) setShowChat(false); }} className={`p-1 hover:bg-gray-700 rounded ${showPlot ? 'text-blue-400' : 'text-gray-400'}`}>
+                    <Eye className="h-4 w-4" />
+                  </button>
+                )}
+                <button onClick={onClearConsole} className="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-red-400" title="Clear Results">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -376,11 +378,11 @@ export default function CodeLayout({
                   />
                 )}
                 <div className="bg-gray-800 px-3 md:px-4 py-2 border-b border-gray-700 flex items-center justify-between">
-                  <div className="flex items-center space-x-2"><Eye className="h-4 w-4 text-gray-400" /><h2 className="text-xs md:text-sm font-medium text-gray-300">Plot</h2></div>
+                  <div className="flex items-center space-x-2"><Eye className="h-4 w-4 text-gray-400" /><h2 className="text-xs md:text-sm font-medium text-gray-300">Preview</h2></div>
                   <button onClick={() => { setShowPlot(false); if (onClearPlot) onClearPlot(); }} className="p-1 hover:bg-gray-700 rounded"><X className="h-4 w-4 text-gray-400" /></button>
                 </div>
                 <div className="flex-1 p-2 md:p-3 overflow-y-auto bg-gray-900 flex items-center justify-center">
-                  {plotContent || <div className="text-gray-500 italic text-xs">Plots will appear here...</div>}
+                  {plotContent || <div className="text-gray-500 italic text-xs">Preview content will appear here...</div>}
                 </div>
               </div>
             )}

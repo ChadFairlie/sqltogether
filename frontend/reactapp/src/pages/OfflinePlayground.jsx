@@ -3,12 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { saveAs } from 'file-saver';
 import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun } from 'docx';
-import { Send, Edit2, Check, X, Pencil, Eraser, Highlighter, RotateCcw, RotateCw, Trash2, Eye, EyeOff, FileDown } from "lucide-react";
+import { Edit2, Check, X, Pencil, Eraser, Highlighter, RotateCcw, RotateCw, Trash2, Eye, EyeOff, FileDown } from "lucide-react";
 import Anser from "anser";
 
 // CodeMirror
 import CodeMirror from "@uiw/react-codemirror";
-import { python } from "@codemirror/lang-python";
+import { sql } from "@codemirror/lang-sql";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { StateField, StateEffect } from "@codemirror/state";
 import { Decoration, EditorView } from "@codemirror/view";
@@ -18,7 +18,7 @@ import api from "../../axiosConfig";
 
 // Components & Hooks
 import CodeLayout from "../components/CodeLayout";
-import { usePyRunner } from "../hooks/usePyRunner";
+import { useSqlRunner } from "../hooks/useSqlRunner";
 import { useLocalCanvas } from "../hooks/useLocalCanvas";
 
 // Error line decoration
@@ -39,19 +39,18 @@ const errorLineField = StateField.define({
 });
 
 // Default text for new users
-const DEFAULT_CODE = `# Welcome to the Offline Playground!
-# You can write and run Python code right here in your browser.
-# Data is saved to your browser's local storage.
+const DEFAULT_CODE = `-- Welcome to the SQL Playground.
+-- SQL execution is coming in Phase 4.
+-- Your query text is saved to your browser's local storage.
 
-name = input("Whats your name? ")
-print(f"Hello from SQLTogether, {name}!")`;
+SELECT 1 AS ready;`;
 
 export default function OfflinePlayground() {
   const navigate = useNavigate();
   const { token } = useParams(); // Capture the token from the URL if present
   const [code, setCode] = useState(() => {
     // If we are loading a specific snippet (token exists), start with loading text
-    if (token) return "# Loading snippet...";
+    if (token) return "-- Loading snippet...";
     return localStorage.getItem("offline_code") || DEFAULT_CODE;
   });
 
@@ -69,7 +68,7 @@ export default function OfflinePlayground() {
   const editorViewRef = useRef(null);
 
   // Hooks
-  const runner = usePyRunner();
+  const runner = useSqlRunner();
   const canvas = useLocalCanvas();
 
   useEffect(() => {
@@ -79,14 +78,14 @@ export default function OfflinePlayground() {
         try {
           const res = await api.get(`/api/public/snippet/${token}/`);
 
-          setCode(res.data.code || "# No content in this project");
+          setCode(res.data.code || "-- No content in this project");
           setProjectName(`Copy of ${res.data.name}`);
           setTempName(`Copy of ${res.data.name}`);
 
           runner.clearConsole();
         } catch (err) {
           console.error("Failed to load snippet", err);
-          setCode("# Error: Could not load snippet. It may be invalid or expired.");
+          setCode("-- Error: Could not load snippet. It may be invalid or expired.");
           setProjectName("Error Loading");
         } finally {
           setIsLoadingSnippet(false);
@@ -148,7 +147,7 @@ export default function OfflinePlayground() {
     const content = code;
     const filename = (projectName || 'offline').replace(/[^a-z0-9]/gi, '_').toLowerCase() + ext;
 
-    if (ext === '.py') saveAs(new Blob([content], { type: 'text/python' }), filename);
+    if (ext === '.sql') saveAs(new Blob([content], { type: 'text/sql' }), filename);
     else if (ext === '.txt') saveAs(new Blob([content], { type: 'text/plain' }), filename);
     else if (ext === '.pdf') {
       const doc = new jsPDF();
@@ -240,7 +239,7 @@ export default function OfflinePlayground() {
         height="100%"
         className="h-full text-sm"
         theme={oneDark}
-        extensions={[python(), errorLineField]}
+        extensions={[sql(), errorLineField]}
         onChange={(value) => {
           setCode(value);
           if (runner.errorLine) runner.setErrorLine(null);
@@ -254,7 +253,7 @@ export default function OfflinePlayground() {
   );
 
   const consoleSlot = runner.consoleOutput.length === 0 ? (
-    <div className="text-gray-500 italic">Console output will appear here...</div>
+    <div className="text-gray-500 italic">Query results will appear here after Phase 4 connects SQL execution.</div>
   ) : (
     runner.consoleOutput.map(e => (
       <div key={e.id} className="flex items-start space-x-2 py-1">
@@ -279,25 +278,7 @@ export default function OfflinePlayground() {
     ))
   );
 
-  const inputSlot = runner.waitingForInput && (
-    <div className="border-t border-gray-700 bg-gray-800 p-3">
-      <div className="flex items-center space-x-2">
-        <input
-          ref={runner.inputRef}
-          onKeyDown={e => e.key === 'Enter' && (runner.submitInput(e.target.value), e.target.value = '')}
-          className="flex-1 bg-gray-700 text-white px-3 py-2 rounded text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter input..."
-        />
-        <button
-          onClick={() => { if (runner.inputRef.current) runner.submitInput(runner.inputRef.current.value); }}
-          className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-        >
-          <Send className="h-4 w-4" />
-        </button>
-      </div>
-      <div className="text-xs text-gray-400 mt-1">Press Enter to send input</div>
-    </div>
-  );
+  const inputSlot = null;
 
   return (
     <CodeLayout
@@ -322,15 +303,8 @@ export default function OfflinePlayground() {
       onClearConsole={runner.clearConsole}
       inputContent={inputSlot}
 
-      // Plot
-      plotContent={runner.plotSrc ? (
-        <img
-          src={runner.plotSrc}
-          alt="Plot"
-          style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', background: 'white' }}
-        />
-      ) : null}
-      onClearPlot={() => runner.setPlotSrc(null)}
+      plotContent={null}
+      onClearPlot={() => {}}
 
       // No chat/voice in offline mode
       chatContent={null}
@@ -341,8 +315,8 @@ export default function OfflinePlayground() {
       // Execution
       isLoading={runner.isLoading}
       isRunning={runner.isRunning}
-      onRun={() => runner.runCode(code)}
-      onStop={runner.stopCode}
+      onRun={() => runner.runQuery(code)}
+      onStop={runner.stopQuery}
       onDownloadOption={handleDownload}
     />
   );

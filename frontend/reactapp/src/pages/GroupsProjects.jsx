@@ -222,7 +222,7 @@ export default function GroupsAndProjectsPage() {
                         <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-1 rounded-xl border border-gray-700/50">
                         <img
                             src="/sqltogether.svg"
-                            alt="Code Icon"
+                            alt="SQLTogether icon"
                             className="h-8 w-8"
                         />
                         </div>

@@ -83,8 +83,8 @@ export const ShareModal = ({ isOpen, onClose, group, project }) => {
             </h4>
             <p className="text-xs text-gray-400 leading-relaxed">
               {activeTab === "edit"
-                ? "Anyone with this link can join the session and edit code in real-time. They must be logged in to SQLTogether."
-                : "Anyone with this link can view a copy of your code in the Offline Playground. They cannot edit your original project."
+                ? "Anyone with this link can join the session and edit the query in real time. They must be logged in to SQLTogether."
+                : "Anyone with this link can view a copy of your query in the SQL Playground. They cannot edit your original project."
               }
             </p>
           </div>

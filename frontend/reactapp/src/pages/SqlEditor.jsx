@@ -9,7 +9,7 @@ import Anser from "anser";
 
 // CodeMirror
 import CodeMirror from "@uiw/react-codemirror";
-import { python } from "@codemirror/lang-python";
+import { sql } from "@codemirror/lang-sql";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { StateField, StateEffect } from "@codemirror/state";
 import { Decoration, EditorView } from "@codemirror/view";
@@ -26,7 +26,7 @@ import api from "../../axiosConfig";
 // Hooks & Components
 import CodeLayout from "../components/CodeLayout";
 import { ShareModal } from "../components/Modals/ShareModal";
-import { usePyRunner } from "../hooks/usePyRunner";
+import { useSqlRunner } from "../hooks/useSqlRunner";
 import { useVoiceChat } from "../hooks/useVoiceChat";
 import { useSharedCanvas } from "../hooks/useSharedCanvas";
 
@@ -47,7 +47,7 @@ const errorLineField = StateField.define({
   provide: f => EditorView.decorations.from(f)
 });
 
-export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, projectName: propProjectName }) {
+export default function SqlEditor({ groupId: propGroupId, projectId: propProjectId, projectName: propProjectName }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { groupId: urlGroupId, projectId: urlProjectId } = useParams();
@@ -58,14 +58,15 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
   const [projectName, setProjectName] = useState(propProjectName || location.state?.projectName || "Loading...");
 
   // State
-  const [code, setCode] = useState('# Loading code...\n# If this message stays for more than 10 seconds, please refresh the page.');
+  const [code, setCode] = useState(`-- Loading query...
+-- If this message stays for more than 10 seconds, please refresh the page.`);
   const [isConnected, setIsConnected] = useState(false);
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState(projectName);
-  const [latency, setLatency] = useState(null);
+  const [, setLatency] = useState(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [editorCrashed, setEditorCrashed] = useState(false);
   const [showSizeWarning, setShowSizeWarning] = useState(false);
@@ -130,7 +131,7 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
   }, [projectName]);
 
   // CUSTOM HOOKS
-  const runner = usePyRunner();
+  const runner = useSqlRunner();
   const voice = useVoiceChat(wsRef, myUserId);
   const canvas = useSharedCanvas(ydocRef, isConnected, isSynced);
 
@@ -186,7 +187,7 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
         const ytextContent = ytextRef.current.toString();
 
         // If editor is stuck showing empty/loading message
-        if (editorText.includes('# Loading code...') || editorText === '' || currentLength === 0) {
+        if (editorText.includes('-- Loading query...') || editorText === '' || currentLength === 0) {
           emptyCheckCount++;
           if (emptyCheckCount > 5) {
             console.error("Editor stuck in loading state - likely crashed");
@@ -310,12 +311,13 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
             } catch (e) { console.error("Failed to apply Yjs update", e); }
             break;
 
-          case 'sync':
+          case 'sync': {
             const stateBytes = Uint8Array.from(atob(data.ydoc_b64), c => c.charCodeAt(0));
             Y.applyUpdate(ydoc, stateBytes, 'server');
             isDocInitialized = true;
             setIsSynced(true);
             break;
+          }
 
           case 'awareness':
             setTimeout(() => {
@@ -333,7 +335,7 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
             }, 400);
             break;
 
-          case 'remove_awareness':
+          case 'remove_awareness': {
             const uid = data.user_id;
             const clientsToRemove = [];
             awareness.getStates().forEach((state, clientID) => {
@@ -344,6 +346,7 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
               awareness.emit('change', [{ added: [], updated: [], removed: clientsToRemove }, 'remote']);
             }
             break;
+          }
 
           case 'connection':
             if (data.users) {
@@ -358,11 +361,12 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
             }
             break;
 
-          case 'chat_message':
+          case 'chat_message': {
             // Convert to string to ensure safe comparison between ints and strings
             const isMe = String(data.user_id) === String(myUserId);
             setChatMessages(p => [...p, { ...data, timestamp: new Date(data.timestamp * 1000), isMe }]);
             break;
+          }
 
           case 'voice_room_update':
             voice.setParticipants(data.participants || []);
@@ -509,9 +513,9 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
   const handleDownload = (ext) => {
     if (!ytextRef.current) return;
     const content = ytextRef.current.toString();
-    const filename = (projectName || 'main').replace(/[^a-z0-9]/gi, '_').toLowerCase() + ext;
+    const filename = (projectName || 'query').replace(/[^a-z0-9]/gi, '_').toLowerCase() + ext;
 
-    if (ext === '.py') saveAs(new Blob([content], { type: 'text/python' }), filename);
+    if (ext === '.sql') saveAs(new Blob([content], { type: 'text/sql' }), filename);
     else if (ext === '.txt') saveAs(new Blob([content], { type: 'text/plain' }), filename);
     else if (ext === '.pdf') {
       const doc = new jsPDF();
@@ -524,11 +528,11 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
     }
   };
 
-  // large code size warning
+  // large query size warning
   useEffect(() => {
     if (!ytextRef.current) return;
 
-    const checkCodeSize = () => {
+    const checkQuerySize = () => {
       const content = ytextRef.current.toString();
       const sizeInBytes = new Blob([content]).size;
       const sizeInKB = sizeInBytes / 1024;
@@ -542,12 +546,12 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
 
     };
 
-    // Check size whenever code changes
-    const observer = () => checkCodeSize();
+    // Check size whenever query changes
+    const observer = () => checkQuerySize();
     ytextRef.current.observe(observer);
 
     // Initial check
-    checkCodeSize();
+    checkQuerySize();
 
     return () => {
       if (ytextRef.current) {
@@ -587,7 +591,7 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
             <div className="text-center">
               <p className="text-red-400 font-bold text-xl mb-2">Editor Crashed</p>
               <p className="text-gray-300 mb-4">
-                The code editor encountered a sync error. Please refresh and connect again.
+                The query editor encountered a sync error. Please refresh and connect again.
               </p>
               <button
                 onClick={() => window.location.reload()}
@@ -606,7 +610,7 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
             value={ytextRef.current.toString()}
             theme={oneDark}
             extensions={[
-              python(),
+              sql(),
               yCollab(ytextRef.current, awarenessRef.current, { undoManager: codeUndoManagerRef.current }),
               errorLineField
             ]}
@@ -660,7 +664,7 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
   );
 
   const consoleSlot = runner.consoleOutput.length === 0 ? (
-    <div className="text-gray-500 italic">Console output will appear here...</div>
+    <div className="text-gray-500 italic">Query results will appear here after Phase 4 connects SQL execution.</div>
   ) : (
     runner.consoleOutput.map(e => (
       <div key={e.id} className="flex items-start space-x-2 py-1">
@@ -685,20 +689,7 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
     ))
   );
 
-  const inputSlot = runner.waitingForInput && (
-    <div className="border-t border-gray-700 bg-gray-800 p-3">
-      <div className="flex items-center space-x-2">
-        <input
-          ref={runner.inputRef}
-          onKeyDown={e => e.key === 'Enter' && (runner.submitInput(e.target.value), e.target.value = '')}
-          className="flex-1 bg-gray-700 text-white px-3 py-2 rounded text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter input..."
-        />
-        <button onClick={() => { if (runner.inputRef.current) runner.submitInput(runner.inputRef.current.value); }} className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded"><Send className="h-4 w-4" /></button>
-      </div>
-      <div className="text-xs text-gray-400 mt-1">Press Enter to send input</div>
-    </div>
-  );
+  const inputSlot = null;
 
   const chatSlot = (
     <>
@@ -781,9 +772,9 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
           <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
         </svg>
         <div className="flex-1">
-          <p className="text-sm text-yellow-200 font-semibold mb-1">Code Size Warning</p>
+          <p className="text-sm text-yellow-200 font-semibold mb-1">Query Size Warning</p>
           <p className="text-xs text-yellow-100">
-            Your code is approaching the 70 KB limit. Changes beyond this point may not be saved properly.
+            Your query is approaching the 70 KB limit. Changes beyond this point may not be saved properly.
           </p>
         </div>
         <button
@@ -808,14 +799,14 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
         chatContent={chatSlot}
         chatMessageCount={chatMessages.length}
         chatInputContent={chatInputSlot}
-        plotContent={runner.plotSrc ? <img src={runner.plotSrc} alt="Plot" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', background: 'white' }} /> : null}
-        onClearPlot={() => runner.setPlotSrc(null)}
+        plotContent={null}
+        onClearPlot={() => {}}
         inputContent={inputSlot}
         voiceControls={voiceSlot}
         drawingControls={drawingSlot}
 
         onBack={() => {
-          if (runner.isRunning) { runner.stopCode(); }
+          if (runner.isRunning) { runner.stopQuery(); }
           if (wsRef.current) wsRef.current.close();
           navigate('/home');
         }}
@@ -824,8 +815,8 @@ export default function PyIDE({ groupId: propGroupId, projectId: propProjectId, 
 
         isLoading={runner.isLoading}
         isRunning={runner.isRunning}
-        onRun={() => runner.runCode(ytextRef.current ? ytextRef.current.toString() : code)}
-        onStop={runner.stopCode}
+        onRun={() => runner.runQuery(ytextRef.current ? ytextRef.current.toString() : code)}
+        onStop={runner.stopQuery}
         onDownloadOption={handleDownload}
       />
 

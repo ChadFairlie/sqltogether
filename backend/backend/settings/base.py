@@ -218,65 +218,48 @@ USER_COLORS = [
   {"color": "#00ACC1", "light": "#00ACC133"}
 ]
 
-# ------------------ CODE TEMPLATES ---------------------
+# ------------------ QUERY TEMPLATES ---------------------
 
-NONE_TEMPLATE = """name = input("Whats your name? ")
-print(f"Hello from SQLTogether, {name}!")"""
+NONE_TEMPLATE = """-- Basic SQL starter
+SELECT 1 AS ready;"""
 
-PYTEST_TEMPLATE = """# ----------------------------------------------
-# WRITE YOUR SOLUTION HERE
-# ----------------------------------------------
+PYTEST_TEMPLATE = """-- Schema practice starter
+CREATE TABLE students (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  grade INTEGER NOT NULL
+);
 
-def solve(n):
-  # TODO: Implement this
-  return 1
+INSERT INTO students (name, grade) VALUES
+  ('Ada', 95),
+  ('Grace', 91),
+  ('Katherine', 98);
 
+SELECT name, grade
+FROM students
+ORDER BY grade DESC;"""
 
+PLT_TEMPLATE = """-- Join practice starter
+CREATE TABLE authors (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL
+);
 
+CREATE TABLE books (
+  id INTEGER PRIMARY KEY,
+  author_id INTEGER NOT NULL,
+  title TEXT NOT NULL
+);
 
-# ==========================================
-# TEST CASES
-# ==========================================
+INSERT INTO authors (id, name) VALUES
+  (1, 'Octavia Butler'),
+  (2, 'Ursula Le Guin');
 
-def test_basic():
-  assert solve(1) == 1
+INSERT INTO books (author_id, title) VALUES
+  (1, 'Kindred'),
+  (2, 'The Dispossessed');
 
-def test_basic2():
-  assert solve(2) == 2
-
-
-  
-
-# ==========================================
-# PYTEST RUNNER (do not modify)
-# ==========================================
-
-if __name__ == "__main__":
-  import pytest, sys, os
-  
-  module_name = os.path.splitext(os.path.basename(__file__))[0]
-  if module_name in sys.modules:
-    del sys.modules[module_name]
-
-  pytest.main(["-s", "-v", "-p", "no:cacheprovider", "--tb=short", "--color=yes", __file__])"""
-
-PLT_TEMPLATE = """import matplotlib.pyplot as plt
-import numpy as np
-
-# 1. Generate Data (Sine Wave)
-x = np.linspace(0, 10, 100)
-y = np.sin(x)
-
-# 2. Setup Plot
-plt.figure(figsize=(10, 6))
-plt.plot(x, y, label='sin(x)', color='#4CAF50', linewidth=2)
-
-# 3. Styling
-plt.title("Test Plot: Sine Wave")
-plt.xlabel("Time (s)")
-plt.ylabel("Amplitude")
-plt.grid(True, linestyle='--', alpha=0.7)
-plt.legend()
-
-# 4. Render
-plt.show()"""
+SELECT books.title, authors.name AS author
+FROM books
+JOIN authors ON authors.id = books.author_id
+ORDER BY books.title;"""
