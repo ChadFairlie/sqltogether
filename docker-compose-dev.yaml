@@ -1,0 +1,131 @@
+# docker compose -f docker-compose-dev.yaml up -d
+# python manage.py runserver 0.0.0.0:8000
+services:
+  # build the image all other services will use
+  django-builder:
+    image: pytogether-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: "true"
+
+  # for running migrations and superuser script
+  django-init:
+    image: pytogether-backend:latest
+    command: >
+      sh -c "
+        echo 'Django-Init: Waiting for Postgres...'
+        until pg_isready -h $$POSTGRES_HOST -p $$POSTGRES_PORT; do
+          sleep 1
+        done
+        echo 'Django-Init: Postgres is ready! Running migrations...'
+        python manage.py migrate
+        echo 'Django-Init: Creating superusers...'
+        python manage.py shell -c \"from users.models import User;User.objects.filter(email='test1@gmail.com').exists() or User.objects.create_superuser('test1@gmail.com', 'testtest');User.objects.filter(email='test2@gmail.com').exists() or User.objects.create_superuser('test2@gmail.com', 'testtest')\"
+        echo 'Django-Init: Complete.'
+      "
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend.settings.dev
+    env_file:
+      - ./backend/.env.dev
+    networks:
+      - backend
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - django-builder # Ensures image is built first
+
+  django:
+    image: pytogether-backend:latest
+    restart: unless-stopped
+    command: >
+      sh -c "
+        echo 'Django: Waiting for Postgres...'
+        until pg_isready -h $$POSTGRES_HOST -p $$POSTGRES_PORT; do
+          sleep 1
+        done
+        echo 'Django: Postgres is ready! Starting Django dev server...'
+        python manage.py runserver 0.0.0.0:8000
+      "
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend.settings.dev
+    env_file:
+      - ./backend/.env.dev
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_started
+      django-init: # WAITS FOR MIGRATIONS TO FINISH
+        condition: service_completed_successfully
+    networks:
+      - backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    env_file: ./backend/.env.dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - backend
+
+  celery:
+    image: pytogether-backend:latest
+    restart: unless-stopped
+    command: celery -A backend worker --concurrency=1 -l info
+    env_file:
+      - ./backend/.env.dev
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_started
+      django-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./backend:/app
+    networks:
+      - backend
+
+  celery-beat:
+    image: pytogether-backend:latest
+    restart: unless-stopped
+    command: celery -A backend beat -l info
+    env_file:
+      - ./backend/.env.dev
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_started
+      django-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./backend:/app
+    networks:
+      - backend
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  backend:
+    driver: bridge

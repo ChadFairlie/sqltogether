@@ -1,0 +1,95 @@
+services:
+  django:
+    image: pytogether-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: daphne -b 0.0.0.0 -p 8000 backend.asgi:application
+    restart: unless-stopped
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend.settings
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+    networks:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - backend
+
+  celery:
+    image: pytogether-backend:latest
+    command: celery -A backend worker --concurrency=1 -l info   # we only need one processor since we autosave every minute (and the task does not take longer than a minute yet)
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+    networks:
+      - backend
+
+  celery-beat:
+    image: pytogether-backend:latest
+    command: celery -A backend beat -l info
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+    networks:
+      - backend
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - django
+    networks:
+      - backend
+
+  # Certbot for SSL
+  certbot:
+    image: certbot/certbot:latest
+    container_name: pytogether-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - nginx
+    entrypoint: >
+      /bin/sh -c "
+      apk add --no-cache docker-cli;
+      trap exit TERM;
+      while :; do
+        echo '=== Running certbot renew ===';
+        certbot renew --webroot -w /var/www/certbot;
+        echo '=== Reloading Nginx ===';
+        docker exec pytogether-nginx-1 nginx -s reload;
+        echo '=== Sleeping 12h ===';
+        sleep 12h;
+      done"
+    networks:
+      - backend
+
+volumes:
+  redis_data:
+
+networks:
+  backend:
+    driver: bridge
